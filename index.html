@@ -1,0 +1,135 @@
+<html>
+    <head>
+        <title>text2db - Generate Form</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    </head>
+    <body class="bg-light">
+            <div class="container">
+              <div class="py-5 text-center">
+                <img class="d-block mx-auto mb-4" src="img/logo.png" alt="" width="200">
+                <h2>Generate form</h2>
+                <p class="lead">Input form as a below to generate code for using in text2db project</p>
+              </div>
+        
+              <div class="row">
+                <div class="col-md-12 order-md-1">
+                    <h4 class="mb-3">Schema</h4>
+                    <div class="d-block my-3">
+                      <div class="custom-control custom-radio">
+                        <input id="dm" name="paymentMethod" type="radio" class="custom-control-input" checked required>
+                        <label class="custom-control-label" for="dm">DM</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input id="tlitext" name="paymentMethod" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="tlitext">Tlitext</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                        <input id="tlp" name="paymentMethod" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="tlp">Tlp</label>
+                      </div>
+                    </div>
+                  <h4 class="mb-3">Input Table From</h4>
+                  <form class="needs-validation" novalidate>
+                    <div class="row">
+
+                      <div class="col-md-12 mb-3">
+                        <label for="beanName">Bean name</label>
+                        <input type="text" class="form-control" id="beanName" placeholder="(e.g. tlitextDetCert)" value="" required>
+                        <div class="invalid-feedback">
+                          Valid first name is required.
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div class="mb-3">
+                      <label for="pathName">Resource File Name</label>
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="pathName" placeholder="(e.g. /datcert.dat)" required>
+                        <div class="invalid-feedback" style="width: 100%;">
+                          Bean Path Name is required.
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div class="mb-3">
+                      <label for="entity">Entity</label>
+                      <input type="email" class="form-control" id="entity" placeholder="customerid,referenceid,referencetype,birthdate,sex,contactnameid,contactaddressid">
+                      <div class="invalid-feedback">
+                        Please enter a valid entity for mapping with dto.
+                      </div>
+                    </div>
+        
+                    <div class="mb-3">
+                      <label for="length">Length</label>
+                      <input type="text" class="form-control" id="length" placeholder="1-13,14-26,27-28,29-36,37-37,38-50,51-60" required>
+                      <div class="invalid-feedback">
+                        Please enter a valid length for mapping with entity.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="table">Table</label>
+                      <input type="text" class="form-control" id="table" placeholder="tlitext.detcert" required>
+                      <div class="invalid-feedback">
+                        Please enter a valid table for mapping with entity.
+                      </div>
+                    </div>
+                    <hr class="mb-4">
+                    <button class="btn btn-primary btn-lg btn-block" type="button" onclick="magicCode();">Generate code!</button>
+                  </form>
+                  <div class="mb-3" style="display: none;" id="gen">
+                    <label for="table">for context-batch-tlitext.xml</label>  
+                    <textarea class="form-control" id="result" style="height: 500px;"></textarea>
+                  </div>
+                </div>
+              </div>
+        
+              <footer class="my-5 pt-5 text-muted text-center text-small">
+                <p class="mb-1">&copy; 2017-2018 iPassion</p>
+              </footer>
+            </div>
+        </body>
+        <script>
+            function magicCode() {
+                document.getElementById("gen").style.display = 'block';
+                document.getElementById("result").innerHTML = 
+                '<bean id="'+document.getElementById("beanName").value+'Reader" class="th.co.ipassion.testtool.dto.tlitext.Queue" scope="prototype"/>'+
+                '\n<bean id="tlitextCompensateIdReader" class="org.springframework.batch.item.file.FlatFileItemReader">'+
+                    '\n\t<property name="resource" value="${tlitext.source.file.path}/'+document.getElementById("pathName").value+'"/>'+
+                    '\n\t<property name="lineMapper">'+
+                        '\n\t\t<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">'+
+                            '\n\t\t\t<property name="fieldSetMapper">'+
+                                '\n\t\t\t\t<bean class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">'+
+                                    '\n\t\t\t\t\t<property name="prototypeBeanName" value="'+document.getElementById("beanName").value+'"/>'+
+                                '\n\t\t\t\t</bean>'+
+                            '\n\t\t\t</property>'+
+                            '\n\t\t\t<property name="lineTokenizer">'+
+                                '\n\t\t\t\t<bean class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">'+
+                                    '\n\t\t\t\t\t<property name="names" value="'+document.getElementById("entity").value+'"/>'+
+                                    '\n\t\t\t\t\t<property name="columns" value="'+document.getElementById("length").value+'"/>'+
+                                '\n\t\t\t\t</bean>'+
+                            '\n\t\t\t</property>'+
+                        '\n\t\t</bean>'+
+                    '\n\t</property>'+
+                '\n</bean>'+
+                '\n<bean id="'+document.getElementById("beanName").value+'Writer" class="org.springframework.batch.item.database.JdbcBatchItemWriter">'+
+                    '\n\t<property name="dataSource" ref="dataSource"/>'+
+                    '\n\t<property name="itemSqlParameterSourceProvider">'+
+                        '\n\t\t<bean class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider"/>'+
+                    '\n\t</property>'+
+                    '\n\t<property name="sql">'+
+                        '\n\t\t<value>'+
+                            '\n\t\t\t<![CDATA['+
+                                '\n\t\t\t\tINSERT INTO '+document.getElementById("table").value+
+                                '\n\t\t\t\tVALUES'+
+                                '\n\t\t\t\t('+document.getElementById("entity").value+')'+
+                            '\n\t\t\t]]>'+
+                        '\n\t\t</value>'+
+                    '\n\t</property>'+
+                '\n</bean>';
+            }
+        </script>
+</html>
